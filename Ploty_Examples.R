@@ -1,0 +1,115 @@
+library(plotly)
+# volcano is a numeric matrix that ships with R
+
+# Basic 3D Surface Plot
+fig <- plot_ly(z = ~volcano)
+fig <- fig %>% add_surface()
+
+fig
+
+#Surface Plot with Contours
+fig <- plot_ly(z = ~volcano) %>% add_surface(
+  contours = list(
+    z = list(
+      show=TRUE,
+      usecolormap=TRUE,
+      highlightcolor="#ff0000",
+      project=list(z=TRUE)
+    )
+  )
+)
+fig <- fig %>% layout(
+  scene = list(
+    camera=list(
+      eye = list(x=1.87, y=0.88, z=-0.64)
+    )
+  )
+)
+
+fig
+
+#2D Kernel Density Estimation
+kd <- with(MASS::geyser, MASS::kde2d(duration, waiting, n = 50))
+fig <- plot_ly(x = kd$x, y = kd$y, z = kd$z) %>% add_surface()
+
+fig
+
+#Configure Surface Contour Levels
+x = c(1,2,3,4,5)
+y = c(1,2,3,4,5)
+z = rbind(
+  c(0, 1, 0, 1, 0),
+  c(1, 0, 1, 0, 1),
+  c(0, 1, 0, 1, 0),
+  c(1, 0, 1, 0, 1),
+  c(0, 1, 0, 1, 0))
+
+fig <- plot_ly(
+  type = 'surface',
+  contours = list(
+    x = list(show = TRUE, start = 1.5, end = 2, size = 0.04, color = 'white'),
+    z = list(show = TRUE, start = 0.5, end = 0.8, size = 0.05)),
+  x = ~x,
+  y = ~y,
+  z = ~z)
+fig <- fig %>% layout(
+  scene = list(
+    xaxis = list(nticks = 20),
+    zaxis = list(nticks = 4),
+    camera = list(eye = list(x = 0, y = -1, z = 0.5)),
+    aspectratio = list(x = .9, y = .8, z = 0.2)))
+
+fig
+
+#Mulitple Surfaces
+z <- c(
+  c(8.83,8.89,8.81,8.87,8.9,8.87),
+  c(8.89,8.94,8.85,8.94,8.96,8.92),
+  c(8.84,8.9,8.82,8.92,8.93,8.91),
+  c(8.79,8.85,8.79,8.9,8.94,8.92),
+  c(8.79,8.88,8.81,8.9,8.95,8.92),
+  c(8.8,8.82,8.78,8.91,8.94,8.92),
+  c(8.75,8.78,8.77,8.91,8.95,8.92),
+  c(8.8,8.8,8.77,8.91,8.95,8.94),
+  c(8.74,8.81,8.76,8.93,8.98,8.99),
+  c(8.89,8.99,8.92,9.1,9.13,9.11),
+  c(8.97,8.97,8.91,9.09,9.11,9.11),
+  c(9.04,9.08,9.05,9.25,9.28,9.27),
+  c(9,9.01,9,9.2,9.23,9.2),
+  c(8.99,8.99,8.98,9.18,9.2,9.19),
+  c(8.93,8.97,8.97,9.18,9.2,9.18)
+)
+dim(z) <- c(15,6)
+z2 <- z + 1
+z3 <- z - 1
+
+fig <- plot_ly(showscale = FALSE)
+fig <- fig %>% add_surface(z = ~z)
+fig <- fig %>% add_surface(z = ~z2, opacity = 0.98)
+fig <- fig %>% add_surface(z = ~z3, opacity = 0.98)
+
+fig
+
+
+#What about Dash
+
+#Everywhere in this page that you see fig, you can display the same figure in a Dash for R application by passing it to the figure argument of the Graph component from the built-in dashCoreComponents package like this:
+
+fig <- plot_ly() 
+# fig <- fig %>% add_trace( ... )
+# fig <- fig %>% layout( ... ) 
+
+library(dash)
+library(dashCoreComponents)
+library(dashHtmlComponents)
+
+app <- Dash$new()
+app$layout(
+  htmlDiv(
+    list(
+      dccGraph(figure=fig) 
+    )
+  )
+)
+
+app$run_server(debug=TRUE, dev_tools_hot_reload=FALSE)
