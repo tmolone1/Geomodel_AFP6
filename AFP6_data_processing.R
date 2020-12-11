@@ -23,6 +23,10 @@ r73<-mygrid(x,y,z,buff,coords)
 pts<-mypts(x,y,z,coords)
 conts<-mycontours(r73, seq(900,1080,15))
 
+PlotMap(r73)
+points(pts)
+lines(conts)
+
 #PWR thickness
 x<-merge2$ECOORD.x
 y<-merge2$NCOORD.x
@@ -32,7 +36,7 @@ coords<-CRS("+init=epsg:27200")  # make sure to comment whatever coordinate syst
 buff<-100 # feet to extend the raster beyond the points
 r74<-mygrid(x,y,z,buff,coords)
 pts<-mypts(x,y,z,coords)
-conts<-mycontours(r74, seq(0,75,15))
+conts<-mycontours(r74, seq(0,75,10))
 
 
 PlotMap(r74)
